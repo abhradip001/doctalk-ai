@@ -1,0 +1,23 @@
+# Environment files
+.env
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# IDE settings
+.vscode/
+.idea/
+
+# Build/compiled files
+dist/
+build/
+
+# System files
+.DS_Store
+
+# Uploads or temporary files
+uploads/
+tmp/
