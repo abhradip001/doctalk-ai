@@ -1,0 +1,13 @@
+<h2>Pay ₹<%= doctor.fee %> to confirm your appointment</h2>
+
+<img src="/images/qr-code.jpg" alt="QR Code" width="300" />
+
+<form action="/patient/submit-payment" method="POST">
+  <label>Enter UPI Transaction ID / Name:</label>
+  <input type="text" name="transactionId" required />
+
+  <input type="hidden" name="doctorId" value="<%= doctor._id %>" />
+  <input type="hidden" name="amount" value="<%= doctor.fee + 100 %>" />
+
+  <button type="submit">Submit Payment</button>
+</form>

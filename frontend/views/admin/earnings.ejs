@@ -1,0 +1,29 @@
+<h2>Pending Payments</h2>
+<table>
+    <tr>
+        <th>Patient</th>
+        <th>Doctor</th>
+        <th>Amount</th>
+        <th>Txn ID</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    <% payments.forEach(payment => { %>
+        <tr>
+        <td><%= payment.patientId.name %></td>
+        <td><%= payment.doctorId.name %></td>
+        <td>₹<%= payment.totalAmount %></td>
+        <td><%= payment.transactionId %></td>
+        <td><%= payment.status %></td>
+        <td>
+            <% if (payment.status === 'pending') { %>
+            <form action="/admin/pay-doctor/<%= payment._id %>" method="POST">
+                <button type="submit">Confirm & Book</button>
+            </form>
+            <% } else { %>
+            Paid on <%= payment.doctorPayoutDate.toDateString() %>
+            <% } %>
+        </td>
+        </tr>
+    <% }) %>
+</table>
