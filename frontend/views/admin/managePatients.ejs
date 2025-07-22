@@ -1,0 +1,158 @@
+<%- include('../shared/header', { title: 'Manage Patients' }) %>
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Manage Patients</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Patients</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Patient Records
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="patientsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Doctor</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% patients.forEach(patient => { %>
+                        <tr>
+                            <td><%= patient._id %></td>
+                            <td><%= patient.name %></td>
+                            <td><%= patient.email %></td>
+                            <td><%= patient.phone %></td>
+                            <td>
+                                <% if (patient.doctor) { %>
+                                    <%= patient.doctor.name %> (<%= patient.doctor.specialization %>)
+                                <% } else { %>
+                                    Not assigned
+                                <% } %>
+                            </td>
+                            <td><%= patient.registrationDate.toLocaleDateString() %></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm email-btn" 
+                                        data-patient-id="<%= patient._id %>"
+                                        data-patient-email="<%= patient.email %>"
+                                        data-doctor-email="<%= patient.doctor ? patient.doctor.email : '' %>">
+                                    <i class="fas fa-envelope"></i> Email
+                                </button>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="emailModalLabel">Send Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="emailForm">
+                    <input type="hidden" id="patientId" name="patientId">
+                    <div class="mb-3">
+                        <label for="emailSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="emailSubject" name="subject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailMessage" class="form-label">Message</label>
+                        <textarea class="form-control" id="emailMessage" name="message" rows="5" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sendToPatient" checked disabled>
+                            <label class="form-check-label" for="sendToPatient">
+                                Send to patient: <span id="patientEmailDisplay"></span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sendToDoctor" name="sendToDoctor" value="true">
+                            <label class="form-check-label" for="sendToDoctor">
+                                Send to doctor: <span id="doctorEmailDisplay"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="sendEmailBtn">Send Email</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../shared/footer') %>
+
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable
+        $('#patientsTable').DataTable();
+
+        // Handle email button click
+        $('.email-btn').click(function() {
+            const patientId = $(this).data('patient-id');
+            const patientEmail = $(this).data('patient-email');
+            const doctorEmail = $(this).data('doctor-email');
+            
+            $('#patientId').val(patientId);
+            $('#patientEmailDisplay').text(patientEmail);
+            $('#doctorEmailDisplay').text(doctorEmail || 'No doctor assigned');
+            
+            if (!doctorEmail) {
+                $('#sendToDoctor').prop('checked', false).prop('disabled', true);
+            } else {
+                $('#sendToDoctor').prop('checked', true).prop('disabled', false);
+            }
+            
+            $('#emailModal').modal('show');
+        });
+        
+        // Handle send email
+        $('#sendEmailBtn').click(function() {
+            const formData = {
+                patientId: $('#patientId').val(),
+                subject: $('#emailSubject').val(),
+                message: $('#emailMessage').val(),
+                sendToDoctor: $('#sendToDoctor').is(':checked') ? 'true' : 'false'
+            };
+            
+            $.ajax({
+                url: '/admin/send-patient-email',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        alert('Email(s) sent successfully!');
+                        $('#emailModal').modal('hide');
+                        $('#emailForm')[0].reset();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Error sending email(s)');
+                }
+            });
+        });
+    });
+</script>
