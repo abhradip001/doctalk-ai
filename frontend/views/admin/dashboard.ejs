@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hospital Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            z-index: 1000;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            border-radius: 10px;
+            margin: 5px 0;
+            padding: 10px 15px !important;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-3">
+            <h4 class="text-white mb-4"><i class="fas fa-hospital-alt me-2"></i>Admin Panel</h4>
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="/admin/dashboard">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+                <a class="nav-link" href="/admin/doctors">
+                    <i class="fas fa-user-md me-2"></i>Doctors
+                </a>
+                <a class="nav-link" href="/admin/appointments">
+                    <i class="fas fa-calendar-check me-2"></i>Appointments
+                </a>
+                <a class="nav-link" href="/admin/assign-patient">
+                    <i class="fas fa-user-plus me-2"></i>Assign Patient
+                </a>
+                <a class="nav-link" href="/admin/earnings">
+                    <i class="fas fa-money-bill-wave me-2"></i>Earnings
+                </a>
+                <hr class="text-white">
+                <a class="nav-link" href="/auth/logout">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col">
+                    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                    <p class="text-muted">Welcome to the admin dashboard</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stats-card h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-uppercase mb-1">Total Doctors</div>
+                                    <div class="h5 mb-0 font-weight-bold"><%= stats.totalDoctors %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-user-md fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stats-card h-100 py-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-uppercase mb-1">Total Patients</div>
+                                    <div class="h5 mb-0 font-weight-bold"><%= stats.totalPatients %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stats-card h-100 py-2" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333;">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-uppercase mb-1">Today's Appointments</div>
+                                    <div class="h5 mb-0 font-weight-bold"><%= stats.todayAppointments %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar-day fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stats-card h-100 py-2" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-uppercase mb-1">Monthly Earnings</div>
+                                    <div class="h5 mb-0 font-weight-bold">₹<%= stats.monthlyEarnings.toLocaleString() %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-rupee-sign fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Appointments -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Appointments</h6>
+                            <a href="/admin/appointments" class="btn btn-primary btn-sm">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Doctor</th>
+                                            <th>Specialization</th>
+                                            <th>Date & Time</th>
+                                            <th>Status</th>
+                                            <th>Meeting Link</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (recentAppointments.length > 0) { %>
+                                            <% recentAppointments.forEach(appointment => { %>
+                                                <tr>
+                                                    <td>
+                                                        <strong><%= appointment.patientId?.name || 'N/A' %></strong><br>
+                                                        <small class="text-muted"><%= appointment.patientId?.email || 'N/A' %></small>
+                                                    </td>
+                                                    <td>
+                                                        <strong>Dr. <%= appointment.doctorId?.name || 'N/A' %></strong><br>
+                                                        <small class="text-muted"><%= appointment.doctorId?.phone || 'N/A' %></small>
+                                                    </td>
+                                                    <td><%= appointment.doctorId?.specialization || 'N/A' %></td>
+                                                    <td>
+                                                        <%= new Date(appointment.time).toLocaleDateString('en-IN') %><br>
+                                                        <small class="text-muted"><%= new Date(appointment.time).toLocaleTimeString('en-IN') %></small>
+                                                    </td>
+                                                    <td>
+                                                        <% if (appointment.status === 'completed') { %>
+                                                            <span class="badge bg-success">Completed</span>
+                                                        <% } else if (appointment.status === 'scheduled') { %>
+                                                            <span class="badge bg-info">Scheduled</span>
+                                                        <% } else if (appointment.status === 'cancelled') { %>
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-warning">Pending</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (appointment.meetingLink) { %>
+                                                            <a href="<%= appointment.meetingLink %>" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-video"></i> Join
+                                                            </a>
+                                                        <% } else { %>
+                                                            <span class="text-muted">No link</span>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted">No appointments found</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
