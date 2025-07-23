@@ -1,5 +1,6 @@
 const nlpProcessor = require('./nlpProcessor');
-const medicalDatabase = require('../config/database'); // Assuming you have a database connection
+const Doctor = require('../../backend/models/Doctor');
+ // Assuming you have a database connection
 
 // Medical knowledge base
 const MEDICAL_KB = {
