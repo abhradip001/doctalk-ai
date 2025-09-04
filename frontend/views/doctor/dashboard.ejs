@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doctor Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Doctor Panel</h1>
+    <div class="space-x-4">
+      <a href="/doctor/dashboard" class="hover:underline font-bold">Dashboard</a>
+      <a href="/doctor/appointments" class="hover:underline">Appointments</a>
+      <a href="/doctor/upload-prescription" class="hover:underline">Upload Prescription</a>
+      <a href="/doctor/profile" class="hover:underline">My Profile</a>
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <main class="flex-grow">
+    <div class="max-w-5xl mx-auto mt-10 p-6 bg-white rounded shadow">
+      <h1 class="text-2xl font-bold text-blue-600 mb-4">
+        Welcome, Dr. <%= doctor ? doctor.name : 'Unknown' %>
+      </h1>
+      <p class="mb-6 text-gray-700">
+        Manage appointments, update your profile, upload prescriptions, and write patient notes.
+      </p>
+
+      <!-- Quick actions -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <a href="/doctor/appointments"
+           class="block p-6 bg-blue-50 rounded shadow hover:bg-blue-100 transition">
+          <h2 class="text-xl font-semibold mb-2">Appointments</h2>
+          <p>View and manage your booked appointments.</p>
+        </a>
+
+        <a href="/doctor/upload-prescription"
+           class="block p-6 bg-blue-50 rounded shadow hover:bg-blue-100 transition">
+          <h2 class="text-xl font-semibold mb-2">Upload Prescription</h2>
+          <p>Upload prescriptions for patients easily.</p>
+        </a>
+
+        <a href="/doctor/profile"
+           class="block p-6 bg-blue-50 rounded shadow hover:bg-blue-100 transition">
+          <h2 class="text-xl font-semibold mb-2">My Profile</h2>
+          <p>Update specialization, fee, availability, and details.</p>
+        </a>
+      </div>
+
+      <!-- Patients assigned to this doctor (if provided) -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xl font-semibold text-gray-800">My Patients</h2>
+          <a href="/doctor/appointments" class="text-sm text-blue-600 underline">Open from appointments</a>
+        </div>
+
+        <% if (Array.isArray(patients) && patients.length > 0) { %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% patients.forEach(function(p){ %>
+              <div class="p-4 bg-gray-50 rounded border">
+                <p class="font-medium"><%= p.name %></p>
+                <p class="text-sm text-gray-600">Age: <%= p.age || '—' %></p>
+                <div class="mt-3 flex gap-3">
+                  <!-- OPEN PATIENT INTERFACE -->
+                  <a class="text-blue-600 underline"
+                     href="/health-records/as-patient/<%= p._id %>">View / Add Notes</a>
+                  <a class="text-gray-700 underline"
+                     href="/doctor/appointments?patientId=<%= p._id %>">Appointments</a>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-gray-600">No patient list available here. Open a patient from your appointments, or use the quick open below.</p>
+        <% } %>
+      </div>
+
+      <!-- Quick open by Patient Name -->
+      <div class="p-4 bg-blue-50 rounded border">
+        <h3 class="font-semibold mb-2">Quick open patient notes by Name</h3>
+
+        <% if (typeof notfound !== 'undefined' && notfound) { %>
+          <p class="text-red-600 mb-2">⚠️ Patient not found</p>
+        <% } %>
+
+        <form action="/doctor/open-patient-by-name" method="GET" class="flex items-center gap-2">
+          <input name="name" type="text" placeholder="Enter Patient Name"
+                 class="border p-2 rounded w-full" required />
+          <button class="bg-blue-600 text-white px-4 py-2 rounded">Open</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white text-center p-4 mt-auto">
+    &copy; <%= new Date().getFullYear() %> Clinic-AI | Doctor Panel
+  </footer>
+</body>
+</html>

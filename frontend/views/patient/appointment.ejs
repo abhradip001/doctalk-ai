@@ -1,0 +1,43 @@
+<%- include('../shared/header') %>
+
+<div class="max-w-4xl mx-auto mt-10 bg-white p-6 shadow rounded">
+  <h1 class="text-2xl font-bold text-blue-600 mb-4">Book Appointment</h1>
+
+  <!-- Doctor Details -->
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold"><%= doctor.name %></h2>
+    <p class="text-gray-700"><%= doctor.specialization %> | <%= doctor.experience %> Years Exp.</p>
+    <p class="text-gray-700">Fee: ₹<%= doctor.fee %></p>
+    <p class="text-gray-700">Email: <%= doctor.email %></p>
+  </div>
+
+  <!-- Availability -->
+  <h3 class="text-lg font-bold mb-2">Availability</h3>
+  <% if (doctor.availability && doctor.availability.days && doctor.availability.days.length > 0) { %>
+    <form action="/patient/book-appointment" method="POST" class="space-y-4">
+      <input type="hidden" name="doctorId" value="<%= doctor._id %>" />
+
+      <label class="block font-semibold">Select Day</label>
+      <select name="selectedDay" class="border p-2 rounded" required>
+        <% doctor.availability.days.forEach(day => { %>
+          <option value="<%= day %>"><%= day %></option>
+        <% }) %>
+      </select>
+
+      <label class="block font-semibold">Select Time</label>
+      <select name="selectedTime" class="border p-2 rounded" required>
+        <option value="<%= doctor.availability.startTime %> - <%= doctor.availability.endTime %>">
+          <%= doctor.availability.startTime %> - <%= doctor.availability.endTime %>
+        </option>
+      </select>
+
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Confirm Appointment
+      </button>
+    </form>
+  <% } else { %>
+    <p class="text-gray-500">No available slots.</p>
+  <% } %>
+</div>
+
+<%- include('../shared/footer') %>

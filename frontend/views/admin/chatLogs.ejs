@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title || 'Chat History' %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Admin Navbar -->
+  <nav class="bg-green-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Admin Panel</h1>
+    <div class="space-x-4">
+      <a href="/admin/dashboard" class="hover:underline">Dashboard</a>
+      <a href="/admin/doctors" class="hover:underline">Doctors</a>
+      <a href="/admin/patients" class="hover:underline">Patients</a>
+      <a href="/admin/payments" class="hover:underline">Payments</a>
+      <a href="/admin/appointments" class="hover:underline">Appointments</a>
+      <a href="/admin/chat-logs" class="hover:underline font-semibold underline">Chat Logs</a>
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto w-full px-4 mt-10 mb-12 flex-1">
+    <h1 class="text-3xl font-bold text-green-600 mb-6">AI Symptom Checker — Chat History</h1>
+
+    <!-- Filters -->
+    <form method="GET" class="bg-white rounded shadow p-4 mb-6 grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+      <!-- Patient -->
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+        <select name="patient" class="border px-3 py-2 rounded w-full">
+          <option value="">All</option>
+          <% patients.forEach(p => { %>
+            <option value="<%= p._id %>" <%= (filters.patient === String(p._id)) ? 'selected' : '' %>>
+              <%= p.name %> — <%= p.email %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- Sender -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sender</label>
+        <select name="sender" class="border px-3 py-2 rounded w-full">
+          <option value="" <%= !filters.sender ? 'selected' : '' %>>Both</option>
+          <option value="patient" <%= filters.sender === 'patient' ? 'selected' : '' %>>patient</option>
+          <option value="ai" <%= filters.sender === 'ai' ? 'selected' : '' %>>ai</option>
+        </select>
+      </div>
+
+      <!-- From / To -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">From</label>
+        <input type="date" name="from" value="<%= filters.from || '' %>" class="border px-3 py-2 rounded w-full" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">To</label>
+        <input type="date" name="to" value="<%= filters.to || '' %>" class="border px-3 py-2 rounded w-full" />
+      </div>
+
+      <!-- Page size -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Page size</label>
+        <select name="limit" class="border px-3 py-2 rounded w-full">
+          <option value="10"  <%= Number(filters.limit) === 10  ? 'selected' : '' %>>10</option>
+          <option value="20"  <%= Number(filters.limit) === 20  ? 'selected' : '' %>>20</option>
+          <option value="50"  <%= Number(filters.limit) === 50  ? 'selected' : '' %>>50</option>
+          <option value="100" <%= Number(filters.limit) === 100 ? 'selected' : '' %>>100</option>
+        </select>
+      </div>
+
+      <!-- Order -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Order</label>
+        <select name="order" class="border px-3 py-2 rounded w-full">
+          <option value="desc" <%= (filters.order || 'desc') === 'desc' ? 'selected' : '' %>>Newest first</option>
+          <option value="asc"  <%= filters.order === 'asc' ? 'selected' : '' %>>Oldest first</option>
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="md:col-span-6 flex gap-3">
+        <!-- reset to first page when applying filters -->
+        <input type="hidden" name="page" value="1" />
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-blue-700">Apply</button>
+        <a href="/admin/chat-logs" class="text-gray-600 hover:underline px-2 py-2">Reset</a>
+      </div>
+    </form>
+
+    <!-- Summary + Paging -->
+    <div class="flex items-center justify-between mb-3 text-sm text-gray-700">
+      <div>
+        <span class="font-medium">Total:</span> <%= total %>
+        <span class="ml-3 font-medium">Page:</span> <%= filters.page %> / <%= pages || 1 %>
+        <span class="ml-3 font-medium">Page size:</span> <%= filters.limit %>
+        <span class="ml-3 font-medium">Order:</span> <%= (filters.order || 'desc').toUpperCase() %>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <% const qp = new URLSearchParams({
+             patient: filters.patient || '',
+             sender:  filters.sender  || '',
+             from:    filters.from    || '',
+             to:      filters.to      || '',
+             limit:   String(filters.limit || 20),
+             order:   filters.order || 'desc',
+           }); %>
+
+        <% if (filters.page > 1) { %>
+          <% const prev = new URLSearchParams(qp); prev.set('page', String(Number(filters.page) - 1)); %>
+          <a href="?<%= prev.toString() %>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">← Prev</a>
+        <% } else { %>
+          <span class="px-3 py-1 bg-gray-100 rounded text-gray-400 cursor-not-allowed">← Prev</span>
+        <% } %>
+
+        <% if (filters.page < pages) { %>
+          <% const next = new URLSearchParams(qp); next.set('page', String(Number(filters.page) + 1)); %>
+          <a href="?<%= next.toString() %>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Next →</a>
+        <% } else { %>
+          <span class="px-3 py-1 bg-gray-100 rounded text-gray-400 cursor-not-allowed">Next →</span>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded shadow overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-green-500 text-white">
+          <tr>
+            <th class="py-3 px-4 text-left">When</th>
+            <th class="py-3 px-4 text-left">Patient</th>
+            <th class="py-3 px-4 text-left">From</th>
+            <th class="py-3 px-4 text-left">Message</th>
+            <th class="py-3 px-4 text-left">Lang</th>
+            <th class="py-3 px-4 text-left">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!logs || !logs.length) { %>
+            <tr><td colspan="6" class="p-6 text-center text-gray-500">No chat logs found.</td></tr>
+          <% } else { %>
+            <% logs.forEach(row => { %>
+              <tr class="border-b hover:bg-gray-50">
+                <td class="py-3 px-4 text-sm">
+                  <div title="<%= row.createdAt.toString() %>">
+                    <%= row.createdAt.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) %>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-sm">
+                  <div class="font-medium"><%= row.userId?.name || 'Unknown' %></div>
+                  <div class="text-gray-500"><%= row.userId?.email || '-' %></div>
+                </td>
+                <td class="py-3 px-4 text-sm"><%= row.from %></td>
+                <td class="py-3 px-4 text-sm whitespace-pre-wrap"><%= row.message %></td>
+                <td class="py-3 px-4 text-sm"><%= row.lang %></td>
+                <td class="py-3 px-4 text-sm">
+                  <form method="POST" action="/admin/chat-logs/<%= row._id %>/delete"
+                        onsubmit="return confirm('Delete this log?')">
+                    <button class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="bg-white shadow-inner">
+    <div class="max-w-7xl mx-auto px-4 py-6 text-gray-600 text-sm flex justify-between">
+      <p>© <%= new Date().getFullYear() %> Clinic-AI. All rights reserved.</p>
+      <div class="space-x-6">
+        <a href="/about" class="hover:text-blue-600">About Us</a>
+        <a href="/contact" class="hover:text-blue-600">Contact</a>
+        <a href="/privacy" class="hover:text-blue-600">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

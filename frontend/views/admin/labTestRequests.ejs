@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lab Test Requests — Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Admin Navbar -->
+  <nav class="bg-green-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Admin Panel</h1>
+    <div class="space-x-4">
+      <a href="/admin/dashboard" class="hover:underline">Dashboard</a>
+      <a href="/admin/doctors" class="hover:underline">Doctors</a>
+      <a href="/admin/patients" class="hover:underline">Patients</a>
+      <a href="/admin/chat-logs" class="hover:underline">Chat Logs</a>
+      <a href="/admin/payments" class="hover:underline">Payments</a>
+      <a href="/admin/appointments" class="hover:underline">Appointments</a>
+      <a href="/admin/lab-test-requests" class="underline font-semibold">Lab Test Requests</a>
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto mt-10 px-4">
+    <h1 class="text-3xl font-bold text-green-600 mb-6">Lab Test Requests</h1>
+
+    <% if (!requests || !requests.length) { %>
+      <p class="text-gray-600">No requests yet.</p>
+    <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow rounded">
+          <thead class="bg-green-600 text-white">
+            <tr>
+              <th class="py-2 px-4">Patient</th>
+              <th class="py-2 px-4">Test</th>
+              <th class="py-2 px-4">Preferred Window</th>
+              <th class="py-2 px-4">Pickup</th>
+              <th class="py-2 px-4">Status</th>
+              <th class="py-2 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% requests.forEach(r => { %>
+              <tr class="border-b hover:bg-gray-50">
+                <td class="py-2 px-4"><%= r.patientId?.name %> (<%= r.patientId?.email %>)</td>
+                <td class="py-2 px-4"><%= r.testName %></td>
+                <td class="py-2 px-4">
+                  <%= r.preferredDate ? new Date(r.preferredDate).toLocaleDateString() : '' %><br/>
+                  <%= r.preferredTimeFrom %> – <%= r.preferredTimeTo %>
+                </td>
+                <td class="py-2 px-4"><%= r.pickupAddress %></td>
+                <td class="py-2 px-4 capitalize"><%= r.status %></td>
+                <td class="py-2 px-4 space-y-2">
+                  <form method="POST" action="/admin/lab-test-requests/<%= r._id %>/approve">
+                    <input name="employeeName" placeholder="Employee name" class="border p-1 rounded w-full mb-1"/>
+                    <input name="employeePhone" placeholder="Employee phone" class="border p-1 rounded w-full mb-1"/>
+                    <button class="bg-green-600 text-white px-2 py-1 rounded">Approve</button>
+                  </form>
+                  <form method="POST" action="/admin/lab-test-requests/<%= r._id %>/collected">
+                    <button class="bg-yellow-600 text-white px-2 py-1 rounded">Mark Collected</button>
+                  </form>
+                  <% if (r.reportFilename) { %>
+                    <a href="/uploads/lab-tests/<%= r.reportFilename %>" target="_blank" class="text-blue-600 underline">View Report</a>
+                  <% } else { %>
+                    <form method="POST" action="/admin/lab-test-requests/<%= r._id %>/report" enctype="multipart/form-data">
+                      <input type="file" name="file" class="border p-1 rounded w-full mb-1" required/>
+                      <button class="bg-blue-600 text-white px-2 py-1 rounded">Upload Report</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+</body>
+</html>

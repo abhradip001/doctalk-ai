@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+    <!-- Content Center -->
+    <div class="flex-grow flex items-center justify-center">
+        <div class="bg-white p-10 rounded shadow-md text-center w-96">
+            <h1 class="text-3xl font-bold text-blue-600 mb-4">Welcome to Clinic-AI</h1>
+            <p class="text-gray-600 mb-6">Please Login or Register</p>
+            <div class="flex flex-col space-y-3">
+                <a href="/auth/login" 
+                   class="bg-blue-500 text-white px-5 py-2 rounded hover:bg-blue-600">
+                    Login
+                </a>
+                <a href="/patient/register" 
+                   class="bg-green-500 text-white px-5 py-2 rounded hover:bg-green-600">
+                    Register as Patient
+                </a>
+                <a href="/doctor/register" 
+                   class="bg-purple-500 text-white px-5 py-2 rounded hover:bg-purple-600">
+                    Register as Doctor
+                </a>
+                <a href="/admin/register" 
+                   class="bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600">
+                    Register as Admin
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

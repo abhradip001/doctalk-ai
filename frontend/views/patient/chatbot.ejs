@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chatbot - Clinic-AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between">
+    <h1 class="text-2xl font-bold text-blue-600">Clinic-AI</h1>
+    <a href="/logout" class="text-red-500 font-semibold hover:underline">Logout</a>
+  </nav>
+
+  <div class="max-w-3xl mx-auto mt-10 bg-white rounded shadow p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">AI Symptom Checker</h2>
+      <select id="language" class="border px-2 py-1 rounded">
+        <option value="en">English</option>
+        <option value="bn">Bengali</option>
+        <option value="hi">Hindi</option>
+      </select>
+    </div>
+
+    <!-- AI Face -->
+    <div class="flex justify-center mb-4">
+      <img src="/images/ai-face.png" alt="AI Face" class="w-24 h-24 rounded-full border-4 border-blue-300 animate-pulse">
+    </div>
+
+    <div id="chat" class="h-96 overflow-y-auto border p-4 rounded mb-4 bg-gray-50"></div>
+    
+    <div class="flex space-x-2">
+      <input id="userInput" class="flex-grow border rounded-l px-3 py-2" placeholder="Describe your symptoms..." />
+      <button onclick="sendMessage()" class="bg-blue-500 text-white px-4 rounded-r">Send</button>
+      <button onclick="startVoice()" class="bg-green-500 text-white px-4 rounded">🎤 Speak</button>
+    </div>
+  </div>
+
+ <script>
+  const synth = window.speechSynthesis;
+
+  function scrollChatToBottom() {
+    const div = document.getElementById('chat');
+    div.scrollTop = div.scrollHeight;
+  }
+
+  function speak(text, lang) {
+    if (!text) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang === 'bn' ? 'bn-IN' : lang === 'hi' ? 'hi-IN' : 'en-US';
+    synth.speak(utterance);
+  }
+
+  async function sendMessage() {
+    const inputEl = document.getElementById('userInput');
+    const input = (inputEl.value || '').trim();
+    const lang = document.getElementById('language').value;
+    const chat = document.getElementById('chat');
+
+    if (!input) return;
+
+    // you
+    chat.innerHTML += `<p class="text-blue-600 font-semibold">You: ${input}</p>`;
+    scrollChatToBottom();
+
+    // call NEW endpoint that returns the array-text reply
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input, lang })
+      });
+      const data = await res.json();
+
+      // ---- 1) show the exact text array you asked for ----
+      const arrayText = typeof data.reply === 'string' ? data.reply : '[]';
+      chat.innerHTML += `
+        <pre class="bg-gray-100 rounded p-3 mt-2 overflow-x-auto text-sm whitespace-pre-wrap">${arrayText}</pre>
+      `;
+
+      // ---- 2) (optional) show pretty cards from structured JSON ----
+      const matched = Array.isArray(data.matchedConditions) ? data.matchedConditions : [];
+      if (matched.length) {
+        const top = matched[0];
+        const advice = (data.analysis?.generalAdvice) || // if you kept it
+                       (data.isEmergency ? 'Seek immediate medical attention.' : 'Monitor symptoms and consult a doctor if they worsen.');
+
+        chat.innerHTML += `
+          <div class="bg-white border rounded p-3 mt-3">
+            ${data.isEmergency ? `<div class="bg-red-100 text-red-700 px-2 py-1 rounded mb-2 font-semibold">EMERGENCY FLAGGED</div>` : ``}
+            <p><b>Top Match:</b> ${top.condition}</p>
+            <p><b>Severity:</b> ${top.details?.severity ?? 'unknown'}</p>
+            <p><b>Urgency:</b> ${top.details?.urgency ?? '—'}</p>
+            <p><b>Advice:</b> ${advice}</p>
+          </div>
+        `;
+
+        // Suggested doctors (if backend sent them)
+        const docs = Array.isArray(data.doctors) ? data.doctors : [];
+        if (docs.length) {
+          const list = docs.slice(0, 4).map(d => `
+            <li class="flex items-center justify-between py-2 border-b last:border-none">
+              <div>
+                <div class="font-semibold">${d.name}</div>
+                <div class="text-sm text-gray-600">${d.specialization} • ${d.experience ?? 0} yrs • ₹${d.fee ?? '-'}</div>
+              </div>
+              <a href="/appointments/new?doctorId=${d._id}" class="bg-blue-600 text-white text-sm px-3 py-1 rounded">Book</a>
+            </li>`).join('');
+          chat.innerHTML += `
+            <div class="bg-gray-50 border rounded p-3 mt-3">
+              <div class="font-semibold mb-2">Suggested Doctors</div>
+              <ul>${list}</ul>
+            </div>`;
+        }
+
+        speak(advice, lang);
+      } else {
+        chat.innerHTML += `<p class="text-red-500 mt-2">No condition matched. Your input will improve our AI.</p>`;
+        speak('No condition matched. Please consult a doctor.', lang);
+      }
+
+      inputEl.value = '';
+    } catch (err) {
+      console.error(err);
+      chat.innerHTML += `<p class="text-red-500 mt-2">Server error. Please try again.</p>`;
+    } finally {
+      scrollChatToBottom();
+    }
+  }
+
+  function startVoice() {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    const lang = document.getElementById('language').value;
+    recognition.lang = lang === 'bn' ? 'bn-IN' : lang === 'hi' ? 'hi-IN' : 'en-US';
+    recognition.onresult = (event) => {
+      document.getElementById('userInput').value = event.results[0][0].transcript;
+      sendMessage();
+    };
+    recognition.start();
+  }
+</script>
+
+</body>
+</html>

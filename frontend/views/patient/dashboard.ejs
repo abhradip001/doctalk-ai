@@ -1,0 +1,240 @@
+<%- include('../shared/header') %>
+
+<!-- Emergency Contact Section (always visible) -->
+<div class="max-w-5xl mx-auto mt-6">
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex flex-col gap-3">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="text-red-700 font-bold text-lg">🚨 Emergency? Call Now</div>
+      <div class="flex flex-wrap gap-2">
+        <a href="tel:112" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700" aria-label="Call 112">
+          ☎ 112 (Emergency)
+        </a>
+        <a href="tel:108" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" aria-label="Call 108">
+          🚑 108 (Ambulance)
+        </a>
+        <a href="tel:102" class="px-4 py-2 bg-rose-500 text-white rounded hover:bg-rose-600" aria-label="Call 102">
+          🚑 102 (Health Services)
+        </a>
+      </div>
+    </div>
+    <div class="text-xs text-red-700">
+      These buttons open your phone dialer on mobile. On desktop, they will open your configured calling app
+      (e.g., <b>Skype</b>, <b>Microsoft Teams</b>, <b>Zoom Phone</b>) if set as the default for <code>tel:</code> links.
+      If no app is configured, please dial the number manually.
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Chat Section -->
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <!-- AI Face -->
+    <div class="flex justify-center mb-4">
+      <div class="relative">
+        <img id="ai-face" src="/images/doctor-avatar.jpg" alt="AI Avatar"
+             class="w-28 h-28 rounded-full object-cover shadow">
+        <div id="ai-mouth"
+             class="absolute bottom-5 left-1/2 -translate-x-1/2 w-8 h-2 bg-black rounded-full opacity-60">
+        </div>
+      </div>
+    </div>
+
+    <h2 class="text-xl font-bold text-blue-600 mb-2">AI Symptom Checker</h2>
+    <div id="chat-box" class="h-64 overflow-y-auto border p-3 rounded bg-gray-50 text-sm mb-4"></div>
+
+    <div class="flex items-center">
+      <input id="userInput" placeholder="Describe your symptoms..."
+             class="flex-grow border rounded-l px-4 py-2 focus:outline-none" />
+      <button id="symptom-send" class="bg-blue-500 text-white px-4 rounded-r">Send</button>
+      <button id="mic-btn" class="ml-2 bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600">🎤</button>
+    </div>
+  </div>
+
+  <!-- Doctor Recommendation Section -->
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-xl font-bold text-green-600 mb-4">Suggested Doctors</h2>
+    <div id="doctor-list" class="text-sm text-gray-700">No doctors recommended yet. Use the chatbot.</div>
+  </div>
+</div>
+
+<%- include('../shared/footer') %>
+
+<script>
+  // --- Safe mobile-menu toggle (if header has these IDs) ---
+  document.getElementById('menu-btn')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu')?.classList.toggle('hidden');
+  });
+
+  // --- Speech helpers ---
+  const synth = window.speechSynthesis;
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognizer = Recognition ? new Recognition() : null;
+  if (recognizer) {
+    recognizer.lang = 'en-IN';
+    recognizer.continuous = false;
+  }
+
+  function speak(text) {
+    if (!text) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    document.getElementById('ai-face')?.classList.add('talking');
+    synth.speak(utter);
+    utter.onend = () => document.getElementById('ai-face')?.classList.remove('talking');
+  }
+
+  document.getElementById('mic-btn')?.addEventListener('click', () => {
+    if (!recognizer) return alert('Speech recognition not supported in this browser.');
+    recognizer.start();
+    recognizer.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      document.getElementById('userInput').value = transcript;
+      sendMessage();
+    };
+  });
+
+  // --- API base (your server mounts /api/ai) ---
+  const AI_BASE = '/api/ai';
+
+  async function sendMessage() {
+    const inputEl = document.getElementById('userInput');
+    const text = (inputEl.value || '').trim();
+    if (!text) return;
+
+    const chatBox = document.getElementById('chat-box');
+    chatBox.innerHTML += `<p class="text-blue-600 font-semibold">You: ${escapeHtml(text)}</p>`;
+
+    try {
+      const chatRes = await fetch(`${AI_BASE}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await chatRes.json();
+
+      // --- 1) show the raw array text reply (backend `reply`)
+      if (data.reply) {
+        chatBox.innerHTML += `
+          <pre class="bg-gray-100 rounded p-2 mt-2 overflow-x-auto text-xs whitespace-pre-wrap">AI: ${escapeHtml(data.reply)}</pre>
+        `;
+      }
+
+      // --- 2) show cards from structured `matchedConditions`
+      const matched = Array.isArray(data.matchedConditions) ? data.matchedConditions : [];
+      if (matched.length) {
+        const top = matched[0];
+        chatBox.innerHTML += `
+          <div class="bg-white border rounded p-3 mt-2 text-sm">
+            <p><b>Top condition:</b> ${escapeHtml(top.condition)}</p>
+            <p><b>Severity:</b> ${escapeHtml(top.details?.severity ?? '—')}</p>
+            <p><b>Urgency:</b> ${escapeHtml(top.details?.urgency ?? '—')}</p>
+            <p><b>Recommendations:</b> ${(top.details?.recommendations || []).map(escapeHtml).join(', ')}</p>
+          </div>
+        `;
+      }
+
+      // --- 3) emergency banner (kept minimal; call buttons are always at top)
+      if (data.isEmergency) {
+        chatBox.innerHTML += `
+          <div class="my-2 p-2 rounded bg-red-100 text-red-700 border border-red-300 text-sm">
+            <strong>Emergency:</strong> Your symptoms may require urgent attention.
+            Please contact emergency services or visit the nearest ER immediately.
+          </div>
+        `;
+      }
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+      speak(data.reply || '');   // voice read-out of array text
+
+    } catch (e) {
+      console.error('chat error', e);
+      const chatBox = document.getElementById('chat-box');
+      chatBox.innerHTML += `<p class="text-red-600">AI: Sorry, I had trouble responding.</p>`;
+    }
+
+    // --- 4) fetch doctor suggestions
+    try {
+      const triageRes = await fetch(`${AI_BASE}/triage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      const triage = await triageRes.json();
+      renderSuggestedDoctors(triage);
+    } catch (e) {
+      console.error('triage error', e);
+      document.getElementById('doctor-list').innerHTML =
+        `<div class="text-red-600">Failed to fetch suggestions.</div>`;
+    }
+
+    inputEl.value = '';
+  }
+
+  function renderSuggestedDoctors(data) {
+    const box = document.getElementById('doctor-list');
+    const specialties = data?.specialties || [];
+    const doctors = data?.doctors || [];
+
+    if (!doctors.length) {
+      box.innerHTML = `<div class="text-gray-600">
+        No exact matches. Try a <b>General Physician</b>.
+      </div>`;
+      return;
+    }
+
+    box.innerHTML = `
+      <div class="text-green-700 font-semibold mb-1">
+        Suggested Specialties: ${specialties.map(escapeHtml).join(', ')}
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        ${doctors.map(d => card(d)).join('')}
+      </div>
+    `;
+  }
+
+  function card(d) {
+    // If profileImage already includes 'uploads/...', just prefix with '/'
+    const img = d.profileImage
+      ? (String(d.profileImage).startsWith('uploads/')
+          ? `/${d.profileImage}`
+          : `/uploads/profileImages/${d.profileImage}`)
+      : '/images/doctor.png';
+
+    const exp = d.experience || 0;
+    const fee = d.fee ? `<div class="text-gray-600 text-xs">Fee: ₹${escapeHtml(String(d.fee))}</div>` : '';
+
+    return `
+      <div class="border rounded-lg p-3 flex items-center gap-3">
+        <img src="${img}" class="w-12 h-12 rounded-full object-cover" alt="">
+        <div class="flex-1">
+          <div class="font-semibold">${escapeHtml(d.name || '')}</div>
+          <div class="text-gray-600 text-xs">${escapeHtml(d.specialization || '')} • ${exp} yrs</div>
+          ${fee}
+        </div>
+        <a class="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+           href="/patient/appointment?doctorId=${encodeURIComponent(d._id)}">
+          Book
+        </a>
+      </div>
+    `;
+  }
+
+  // Simple HTML escaper for safety in innerHTML usage
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Hook send button + Enter key
+  document.getElementById('symptom-send')?.addEventListener('click', sendMessage);
+  document.getElementById('userInput')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+</script>
