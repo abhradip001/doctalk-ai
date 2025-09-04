@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Patients</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <nav class="bg-green-600 text-white px-6 py-4 flex justify-between">
+    <h1 class="text-xl font-bold">Admin Panel</h1>
+    <div class="space-x-4">
+      <a href="/admin/dashboard" class="hover:underline">Dashboard</a>
+      <a href="/admin/doctors" class="hover:underline">Doctors</a>
+      <a href="/admin/patients" class="hover:underline font-bold">Patients</a>
+      <a href="/admin/chat-logs" class="hover:underline">Chat Logs</a>
+      <a href="/admin/payments" class="hover:underline">Payments</a>
+      <a href="/admin/appointments" class="hover:underline">Appointments</a>
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto mt-6 bg-white shadow p-4 rounded">
+    <h2 class="text-xl font-bold mb-4">Patients List</h2>
+    <!-- Add table/list here -->
+     <table class="w-full border border-gray-300">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="border p-2 text-left">Name</th>
+      <th class="border p-2 text-left">Email</th>
+      <th class="border p-2 text-left">Phone</th>
+      <th class="border p-2 text-left">Age</th>
+      <th class="border p-2 text-center">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% patients.forEach(patient => { %>
+      <tr>
+        <td class="border p-2"><%= patient.name %></td>
+        <td class="border p-2"><%= patient.email %></td>
+        <td class="border p-2"><%= patient.phone %></td>
+        <td class="border p-2"><%= patient.age %></td>
+        <td class="border p-2 text-center">
+          <form action="/admin/patients/delete/<%= patient._id %>" method="POST" onsubmit="return confirm('Delete this patient?');">
+            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

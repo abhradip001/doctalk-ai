@@ -1,0 +1,43 @@
+<%- include('../shared/header') %>
+
+<div class="max-w-5xl mx-auto mt-10 px-4">
+  <h1 class="text-2xl font-bold text-blue-600 mb-4">
+    Health Records (Doctor Notes)
+  </h1>
+  <p class="mb-2 text-gray-700">Patient: <%= patient ? patient.name : '' %></p>
+
+  <!-- Only show Add Note form if logged-in user is a doctor -->
+  <% if (currentUser && currentUser.role === 'doctor') { %>
+    <form action="/health-records/doctor-note" method="POST"
+          class="bg-white shadow rounded p-4 mb-6 space-y-3">
+      <input type="hidden" name="patientId" value="<%= patientId %>">
+      <input name="title" required placeholder="Title (e.g., Follow-up advice)"
+             class="border p-2 rounded w-full">
+      <textarea name="notes" required placeholder="Write note..."
+                class="border p-2 rounded w-full" rows="4"></textarea>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded">Add Note</button>
+    </form>
+  <% } %>
+
+  <!-- Notes list -->
+  <% if (!records || records.length === 0) { %>
+    <p class="text-gray-600">No doctor notes found.</p>
+  <% } else { %>
+    <div class="space-y-4">
+      <% records.forEach(r => { %>
+        <div class="bg-white shadow rounded p-4">
+          <div class="flex justify-between">
+            <h3 class="font-semibold"><%= r.title %></h3>
+            <span class="text-sm text-gray-500"><%= new Date(r.createdAt).toLocaleString() %></span>
+          </div>
+          <p class="mt-2 whitespace-pre-line"><%= r.notes %></p>
+          <% if (r.doctor) { %>
+            <p class="text-sm text-gray-500 mt-2">— Dr. <%= r.doctor.name %></p>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../shared/footer') %>

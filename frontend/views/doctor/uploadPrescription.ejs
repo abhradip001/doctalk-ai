@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Prescription</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Doctor Panel</h1>
+    <div class="space-x-4">
+      <a href="/doctor/dashboard" class="hover:underline">Dashboard</a>
+      <a href="/doctor/appointments" class="hover:underline">Appointments</a>
+      <a href="/doctor/upload-prescription" class="hover:underline font-bold">Upload Prescription</a>
+      <a href="/doctor/profile" class="hover:underline">My Profile</a>
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1">
+    <div class="max-w-lg mx-auto mt-10 bg-white shadow rounded-lg p-6">
+      <h1 class="text-2xl font-bold text-blue-600 mb-6">Upload Prescription</h1>
+
+      <!-- Upload Form -->
+      <form action="/doctor/upload-prescription" 
+            method="POST" 
+            enctype="multipart/form-data" 
+            class="space-y-5">
+
+        <!-- Select Patient -->
+        <div>
+          <label class="block mb-1 text-gray-700 font-semibold">Select Patient</label>
+          <select name="patientId" required class="w-full border px-3 py-2 rounded focus:ring focus:ring-blue-300">
+            <% patients.forEach(patient => { %>
+              <option value="<%= patient._id %>"><%= patient.name %> - <%= patient.email %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Prescription File Upload -->
+        <div>
+          <label class="block mb-1 text-gray-700 font-semibold">Upload Prescription File</label>
+          <input type="file" 
+                 name="prescription" 
+                 accept=".pdf,.jpg,.jpeg,.png" 
+                 required 
+                 class="w-full border px-3 py-2 rounded focus:ring focus:ring-blue-300">
+          <p class="text-xs text-gray-500 mt-1">Allowed: PDF, JPG, JPEG, PNG</p>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" 
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+          Upload
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white text-center p-4 mt-auto">
+    &copy; <%= new Date().getFullYear() %> Clinic-AI | Doctor Panel
+  </footer>
+</body>
+</html>

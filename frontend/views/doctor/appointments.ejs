@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointments</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Doctor Panel</h1>
+    <div class="space-x-4">
+      <a href="/doctor/dashboard" class="hover:underline">Dashboard</a>
+      <a href="/doctor/appointments" class="hover:underline font-bold">Appointments</a>
+      <a href="/doctor/upload-prescription" class="hover:underline">Upload Prescription</a>
+      <a href="/doctor/profile" class="hover:underline">My Profile</a>
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1">
+    <div class="max-w-5xl mx-auto mt-10 bg-white shadow rounded-lg p-6">
+      <h1 class="text-2xl font-bold text-blue-600 mb-4">Appointments</h1>
+
+      <% if (appointments.length === 0) { %>
+        <p class="text-gray-600">No appointments scheduled.</p>
+      <% } else { %>
+        <table class="w-full border border-gray-300">
+          <thead class="bg-blue-100">
+            <tr>
+              <th class="p-2 border-b text-left">Patient</th>
+              <th class="p-2 border-b text-left">Date</th>
+              <th class="p-2 border-b text-left">Status</th>
+              <th class="p-2 border-b text-left">Meeting Link</th>
+              <th class="p-2 border-b text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% appointments.forEach(app => { %>
+              <tr class="hover:bg-gray-50">
+                <td class="p-2 border-b"><%= app.patientId.name %> (<%= app.patientId.phone %>)</td>
+                <td class="p-2 border-b"><%= app.date %></td>
+                <td class="p-2 border-b">
+                  <% if (app.status === 'Pending') { %>
+                    <span class="text-yellow-500 font-semibold"><%= app.status %></span>
+                  <% } else if (app.status === 'Approved') { %>
+                    <span class="text-green-600 font-semibold"><%= app.status %></span>
+                  <% } else { %>
+                    <span class="text-red-500 font-semibold"><%= app.status %></span>
+                  <% } %>
+                </td>
+                <td class="p-2 border-b">
+                  <% if (app.status === 'Approved' && app.meetingLink) { %>
+                    <a href="<%= app.meetingLink %>" target="_blank" class="text-blue-600 underline">Join Meeting</a>
+                  <% } else if (app.status === 'Approved') { %>
+                    <span class="text-gray-500">Waiting for link</span>
+                  <% } else { %>
+                    <span class="text-gray-400">N/A</span>
+                  <% } %>
+                </td>
+                <td class="p-2 border-b">
+                  <% if (app.status === 'Pending') { %>
+                    <form action="/doctor/appointments/<%= app._id %>/approve" method="POST" class="inline">
+                      <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                        Approve
+                      </button>
+                    </form>
+                    <form action="/doctor/appointments/<%= app._id %>/cancel" method="POST" class="inline ml-2">
+                      <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                        Cancel
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <span class="text-gray-500">No actions</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white text-center p-4 mt-auto">
+    &copy; <%= new Date().getFullYear() %> Clinic-AI | Doctor Panel
+  </footer>
+</body>
+</html>

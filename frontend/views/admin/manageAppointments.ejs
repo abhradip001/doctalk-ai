@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointments — Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Admin Navbar -->
+  <nav class="bg-green-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Admin Panel</h1>
+    <div class="space-x-4">
+      <a href="/admin/dashboard" class="hover:underline">Dashboard</a>
+      <a href="/admin/doctors" class="hover:underline">Doctors</a>
+      <a href="/admin/patients" class="hover:underline">Patients</a>
+      <a href="/admin/chat-logs" class="hover:underline">Chat Logs</a>
+      <a href="/admin/payments" class="hover:underline">Payments</a>
+      <a href="/admin/appointments" class="hover:underline font-semibold underline">Appointments</a>
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="max-w-6xl mx-auto w-full px-4 mt-10 mb-12 flex-1">
+    <h1 class="text-3xl font-bold text-blue-600 mb-6">Appointments</h1>
+
+    <% if (!appointments || appointments.length === 0) { %>
+      <div class="bg-white shadow rounded-lg p-8 text-center text-gray-600">
+        No appointments found.
+      </div>
+    <% } else { %>
+      <div class="overflow-x-auto bg-white shadow rounded-lg">
+        <table class="min-w-full">
+          <thead class="bg-blue-500 text-white">
+            <tr>
+              <th class="py-3 px-4 text-left">Patient</th>
+              <th class="py-3 px-4 text-left">Doctor</th>
+              <th class="py-3 px-4 text-left">Date &amp; Time</th>
+              <th class="py-3 px-4 text-left">Status / Actions</th>
+              <th class="py-3 px-4 text-left">Meeting</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% appointments.forEach(app => { %>
+              <tr class="border-b hover:bg-gray-50">
+                <!-- Patient -->
+                <td class="py-3 px-4">
+                  <div class="font-medium"><%= app.patientId?.name || 'Unknown' %></div>
+                  <div class="text-xs text-gray-500"><%= app.patientId?.email || '-' %></div>
+                </td>
+
+                <!-- Doctor -->
+                <td class="py-3 px-4">
+                  <div class="font-medium"><%= app.doctorId?.name || 'Unknown' %></div>
+                  <div class="text-xs text-gray-500"><%= app.doctorId?.specialization || '-' %></div>
+                </td>
+
+                <!-- Date -->
+                <td class="py-3 px-4">
+                  <%= app.date
+                        ? new Date(app.date).toLocaleString('en-IN', {
+                            timeZone:'Asia/Kolkata',
+                            year:'numeric',
+                            month:'short',
+                            day:'2-digit',
+                            hour:'2-digit',
+                            minute:'2-digit'
+                          }) + ' IST'
+                        : '—' %>
+                </td>
+
+                <!-- Status / Actions -->
+                <td class="py-3 px-4">
+                  <% if (app.status === 'Approved') { %>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-green-100 text-green-700 px-2.5 py-0.5 text-xs font-semibold">
+                      <span class="w-1.5 h-1.5 bg-green-600 rounded-full"></span> Approved
+                    </span>
+
+                    <!-- Delete ONLY when Approved -->
+                    <form action="/admin/appointments/<%= app._id %>/delete" method="POST"
+                          class="mt-2"
+                          onsubmit="return confirm('Delete this approved appointment permanently?');">
+                      <button class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-sm hover:bg-gray-300">
+                        Delete
+                      </button>
+                    </form>
+                  <% } else if (app.status === 'Cancelled') { %>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-red-100 text-red-700 px-2.5 py-0.5 text-xs font-semibold">
+                      <span class="w-1.5 h-1.5 bg-red-600 rounded-full"></span> Cancelled
+                    </span>
+                  <% } else { %>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-yellow-100 text-yellow-700 px-2.5 py-0.5 text-xs font-semibold">
+                      <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Pending
+                    </span>
+
+                    <!-- Approve / Cancel (no date-pick, per your flow) -->
+                    <div class="mt-2 flex gap-2">
+                      <form action="/admin/appointments/<%= app._id %>/status" method="POST" class="flex gap-1">
+                        <input type="hidden" name="status" value="Approved">
+                        <button class="bg-green-600 text-white px-2 py-1 rounded text-sm hover:bg-green-700">
+                          Approve
+                        </button>
+                      </form>
+
+                      <form action="/admin/appointments/<%= app._id %>/status" method="POST">
+                        <input type="hidden" name="status" value="Cancelled">
+                        <button class="bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700">
+                          Cancel
+                        </button>
+                      </form>
+                    </div>
+                  <% } %>
+                </td>
+
+                <!-- Meeting -->
+                <td class="py-3 px-4">
+                  <% if (app.status === 'Approved') { %>
+                    <% if (app.meetingLink) { %>
+                      <a href="<%= app.meetingLink %>" target="_blank" class="text-blue-600 underline">Open link</a>
+                    <% } else { %>
+                      <form action="/admin/appointments/<%= app._id %>/add-link" method="POST" class="flex gap-2">
+                        <input type="url" name="meetingLink" placeholder="Paste meeting URL"
+                               class="border px-3 py-1 rounded flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Save</button>
+                      </form>
+                    <% } %>
+                  <% } else { %>
+                    <span class="text-gray-400">N/A</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </main>
+
+  <footer class="bg-white shadow-inner">
+    <div class="max-w-7xl mx-auto px-4 py-6 text-gray-600 text-sm flex justify-between">
+      <p>© <%= new Date().getFullYear() %> Clinic-AI. All rights reserved.</p>
+      <div class="space-x-6">
+        <a href="/about" class="hover:text-blue-600">About Us</a>
+        <a href="/contact" class="hover:text-blue-600">Contact</a>
+        <a href="/privacy" class="hover:text-blue-600">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

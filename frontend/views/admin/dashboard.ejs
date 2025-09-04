@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Custom Admin Navbar -->
+  <nav class="bg-green-600 text-white px-6 py-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Admin Panel</h1>
+    <div class="space-x-4">
+      <a href="/admin/dashboard" class="hover:underline">Dashboard</a>
+      <a href="/admin/doctors" class="hover:underline">Doctors</a>
+      <a href="/admin/patients" class="hover:underline">Patients</a>
+      <a href="/admin/chat-logs" class="hover:underline">Chat Logs</a>
+      <a href="/admin/payments" class="hover:underline">Payments</a>
+      <a href="/admin/appointments" class="hover:underline">Appointments</a>
+
+      <!-- NEW: Lab Test Requests nav item -->
+      <a href="/admin/lab-test-requests" class="hover:underline">Lab Test Requests</a>
+
+      <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="max-w-7xl mx-auto mt-10 px-4">
+    <h1 class="text-3xl font-bold mb-8 text-green-600">Admin Dashboard</h1>
+
+    <!-- Cards Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <!-- Doctors -->
+      <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">Manage Doctors</h2>
+        <p class="text-gray-600 mb-4">Add, update, or remove doctors.</p>
+        <a href="/admin/doctors" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">View Doctors</a>
+      </div>
+
+      <!-- Patients -->
+      <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">Manage Patients</h2>
+        <p class="text-gray-600 mb-4">View and manage patient records.</p>
+        <a href="/admin/patients" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">View Patients</a>
+      </div>
+
+      <!-- Payments -->
+      <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">Payments</h2>
+        <p class="text-gray-600 mb-4">Review and approve pending payments.</p>
+        <a href="/admin/payments" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Check Payments</a>
+      </div>
+
+      <!-- Appointments -->
+      <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">Appointments</h2>
+        <p class="text-gray-600 mb-4">View all booked appointments.</p>
+        <a href="/admin/appointments" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">View Appointments</a>
+      </div>
+
+      <!-- Chat History -->
+      <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">Chat History</h2>
+        <p class="text-gray-600 mb-4">View patient chat records.</p>
+        <a href="/admin/chat-logs" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">View Patients Chat History</a>
+      </div>
+
+      <!-- NEW: Lab Test Requests card -->
+      <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">Lab Test Requests</h2>
+        <p class="text-gray-600 mb-4">Approve, assign collection, and upload reports.</p>
+        <a href="/admin/lab-test-requests" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Open</a>
+      </div>
+    </div>
+
+    <!-- Quick Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Total Doctors</h3>
+        <p class="text-3xl font-bold text-green-600"><%= doctorCount || 0 %></p>
+      </div>
+      <div class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Total Patients</h3>
+        <p class="text-3xl font-bold text-green-600"><%= patientCount || 0 %></p>
+      </div>
+      <div class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Pending Payments</h3>
+        <p class="text-3xl font-bold text-green-600"><%= pendingPayments || 0 %></p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
