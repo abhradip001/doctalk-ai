@@ -17,7 +17,7 @@ const ChatLog = require('../models/ChatMessage');
 const { protect, isAdmin } = require('../middlewares/authMiddleware'); // optional
 const adminController = require('../controllers/adminController');
 
-const router = express.Router();
+const router = require('express').Router();
 
 // -------- New: uploads + lab-test requests --------
 const multer = require('multer');
@@ -395,5 +395,30 @@ router.post('/lab-test-requests/:id/report', /*protect, isAdmin,*/ uploadLabRepo
     res.status(500).send('Failed to upload report');
   }
 });
+
+// Quick open patient notes by NAME (case-insensitive exact match)
+router.get('/open-patient-notes', protect, isAdmin, async (req, res) => {
+  try {
+    const name = (req.query.name || '').trim();
+    if (!name) return res.redirect('/admin/dashboard');
+
+    // exact case-insensitive match; change to /name/i for partials
+    const patient = await Patient.findOne({ name: new RegExp(`^${name}$`, 'i') })
+                                 .select('_id name');
+
+    if (!patient) {
+      // Re-render dashboard with "not found" flag (so you can show a red message)
+      return res.render('admin/dashboard', { notfound: true });
+    }
+
+    // Redirect to the admin notes page for that patient
+    return res.redirect(`/health-records/admin/patient/${patient._id}`);
+  } catch (err) {
+    console.error('open-patient-notes error:', err);
+    return res.status(500).send('Server Error');
+  }
+});
+
+
 
 module.exports = router;

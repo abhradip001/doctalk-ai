@@ -65,9 +65,9 @@
                 <p class="font-medium"><%= p.name %></p>
                 <p class="text-sm text-gray-600">Age: <%= p.age || '—' %></p>
                 <div class="mt-3 flex gap-3">
-                  <!-- OPEN PATIENT INTERFACE -->
+                  <!-- OPEN DOCTOR INTERFACE for notes -->
                   <a class="text-blue-600 underline"
-                     href="/health-records/as-patient/<%= p._id %>">View / Add Notes</a>
+                     href="/health-records/patient/<%= p._id %>">View / Add Notes</a>
                   <a class="text-gray-700 underline"
                      href="/doctor/appointments?patientId=<%= p._id %>">Appointments</a>
                 </div>
