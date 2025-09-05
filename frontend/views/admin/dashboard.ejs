@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,10 +18,8 @@
       <a href="/admin/chat-logs" class="hover:underline">Chat Logs</a>
       <a href="/admin/payments" class="hover:underline">Payments</a>
       <a href="/admin/appointments" class="hover:underline">Appointments</a>
-
       <!-- NEW: Lab Test Requests nav item -->
       <a href="/admin/lab-test-requests" class="hover:underline">Lab Test Requests</a>
-
       <a href="/auth/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
     </div>
   </nav>
@@ -67,12 +65,31 @@
         <a href="/admin/chat-logs" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">View Patients Chat History</a>
       </div>
 
-      <!-- NEW: Lab Test Requests card -->
+      <!-- Lab Test Requests -->
       <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
         <h2 class="text-xl font-semibold mb-2">Lab Test Requests</h2>
         <p class="text-gray-600 mb-4">Approve, assign collection, and upload reports.</p>
         <a href="/admin/lab-test-requests" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Open</a>
       </div>
+
+      <!-- NEW: Patient Notes (Quick Open) -->
+      <!-- NEW: Patient Notes (Quick Open by Name) -->
+<div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+  <h2 class="text-xl font-semibold mb-2">Patient Notes</h2>
+  <p class="text-gray-600 mb-4">Open doctor notes by patient name.</p>
+
+  <!-- Quick open by Patient Name -->
+  <form action="/admin/open-patient-notes" method="GET" class="flex items-center gap-2">
+    <input name="name" type="text" placeholder="Enter Patient Name"
+           class="border p-2 rounded w-full" required />
+    <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" type="submit">Open</button>
+  </form>
+
+  <% if (typeof notfound !== 'undefined' && notfound) { %>
+    <p class="text-red-600 text-sm mt-2">⚠️ Patient not found</p>
+  <% } %>
+</div>
+
     </div>
 
     <!-- Quick Stats Section -->
@@ -92,5 +109,27 @@
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="bg-white shadow-inner mt-10">
+    <div class="max-w-7xl mx-auto px-4 py-6 text-gray-600 text-sm flex justify-between">
+      <p>© <%= new Date().getFullYear() %> Clinic-AI. All rights reserved.</p>
+      <div class="space-x-6">
+        <a href="/about" class="hover:text-blue-600">About Us</a>
+        <a href="/contact" class="hover:text-blue-600">Contact</a>
+        <a href="/privacy" class="hover:text-blue-600">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Small script to redirect to the admin patient notes page -->
+  <script>
+    document.getElementById('openNotesForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const pid = document.getElementById('patientIdInput').value.trim();
+      if (!pid) return;
+      // Redirect to admin notes view
+      window.location.href = '/health-records/admin/patient/' + encodeURIComponent(pid);
+    });
+  </script>
 </body>
 </html>
