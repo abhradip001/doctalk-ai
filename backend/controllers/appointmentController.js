@@ -6,7 +6,7 @@ const Doctor = require("../models/Doctor");
 exports.bookAppointment = async (req, res) => {
   try {
     const patientId = req.user._id; // from JWT/session
-    const { doctorId, date } = req.body;
+    const { doctorId, date, selectedDay, selectedTime } = req.body;
 
     if (!doctorId || !date) {
       return res.status(400).json({ message: "Doctor and date are required" });
@@ -16,13 +16,17 @@ exports.bookAppointment = async (req, res) => {
     const doctorExists = await Doctor.findById(doctorId).select("_id");
     if (!doctorExists) return res.status(404).json({ message: "Doctor not found" });
 
+    // save machine-friendly date (ISO string)
     const when = new Date(date);
-    if (isNaN(when.getTime())) return res.status(400).json({ message: "Invalid date" });
+    if (isNaN(when.getTime())) {
+      return res.status(400).json({ message: "Invalid date" });
+    }
 
     const appointment = await Appointment.create({
       doctorId,
       patientId,
-      date: when,
+      date: when.toISOString(), // ISO string for sorting/filtering
+      displayDate: `${selectedDay} - ${selectedTime}`, // human-friendly slot
       status: "Pending",
       meetingLink: null
     });

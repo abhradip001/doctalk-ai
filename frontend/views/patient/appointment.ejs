@@ -17,6 +17,17 @@
     <form action="/patient/book-appointment" method="POST" class="space-y-4">
       <input type="hidden" name="doctorId" value="<%= doctor._id %>" />
 
+      <!-- Date Picker -->
+      <label class="block font-semibold">Select Date</label>
+      <input 
+        type="date" 
+        name="selectedDate" 
+        class="border p-2 rounded w-full" 
+        required 
+        min="<%= new Date().toISOString().split('T')[0] %>" 
+      />
+
+      <!-- Day Selector -->
       <label class="block font-semibold">Select Day</label>
       <select name="selectedDay" class="border p-2 rounded" required>
         <% doctor.availability.days.forEach(day => { %>
@@ -24,6 +35,7 @@
         <% }) %>
       </select>
 
+      <!-- Time Selector -->
       <label class="block font-semibold">Select Time</label>
       <select name="selectedTime" class="border p-2 rounded" required>
         <option value="<%= doctor.availability.startTime %> - <%= doctor.availability.endTime %>">
