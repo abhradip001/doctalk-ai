@@ -75,10 +75,12 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 
 ---
 ## 🔮 Future Enhancements
-- Add AI voice assistant for symptom analysis.  
+- Add AI voice assistant for better symptom analysis.  
 - Enable multilingual support (Hindi, Bengali, English).  
 - Add push notifications for appointment reminders.  
-- Expand AI model for advanced disease predictions.
+- Expand AI model for advanced disease predictions.  
+- Improve UPI payment flow → after patient payment, system auto-verifies transaction so no need to send UPI ID to admin (fully self-sufficient).  
+
 
 ---
 
