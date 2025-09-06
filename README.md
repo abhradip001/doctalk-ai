@@ -1,6 +1,16 @@
 # 🏥 Doctalk-AI – AI-Powered Teleclinic Platform  
 *MERN Stack (MongoDB, Express.js, React.js, Node.js) with EJS | 2025*
 
+![License](https://img.shields.io/github/license/abhradip001/doctalk-ai?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/abhradip001/doctalk-ai?style=for-the-badge)
+![Pull Requests](https://img.shields.io/github/issues-pr/abhradip001/doctalk-ai?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/abhradip001/doctalk-ai?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/abhradip001/doctalk-ai?style=for-the-badge)
+![Last Commit](https://img.shields.io/github/last-commit/abhradip001/doctalk-ai?style=for-the-badge)
+
+---
+
+## 📖 Overview
 Doctalk-AI is a **full-stack AI-powered teleclinic platform** that connects **patients, doctors, and admins** in a seamless digital healthcare ecosystem.  
 It combines **AI-driven diagnosis, secure video consultations, UPI-based payments, and health record management** into a single platform.
 
@@ -8,12 +18,12 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 
 ## 🚀 Tech Stack
 
-![MongoDB](https://img.shields.io/badge/MongoDB-%2347A248.svg?&style=for-the-badge&logo=mongodb&logoColor=white)  
-![Express.js](https://img.shields.io/badge/Express.js-%23000000.svg?&style=for-the-badge&logo=express&logoColor=white)  
-![React](https://img.shields.io/badge/React-%2361DAFB.svg?&style=for-the-badge&logo=react&logoColor=black)  
-![Node.js](https://img.shields.io/badge/Node.js-%23339933.svg?&style=for-the-badge&logo=node.js&logoColor=white)  
-![EJS](https://img.shields.io/badge/EJS-FFB800?style=for-the-badge&logo=ejs&logoColor=black)  
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-%2306B6D4.svg?&style=for-the-badge&logo=tailwind-css&logoColor=white)  
+![MongoDB](https://img.shields.io/badge/MongoDB-%2347A248.svg?&style=for-the-badge&logo=mongodb&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-%23000000.svg?&style=for-the-badge&logo=express&logoColor=white)
+![React](https://img.shields.io/badge/React-%2361DAFB.svg?&style=for-the-badge&logo=react&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-%23339933.svg?&style=for-the-badge&logo=node.js&logoColor=white)
+![EJS](https://img.shields.io/badge/EJS-FFB800?style=for-the-badge&logo=ejs&logoColor=black)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-%2306B6D4.svg?&style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 ---
 
@@ -41,7 +51,7 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 
 ## 🖼️ Screenshots
 
-### 👨‍⚕️ Patient Interface
+### 🧑 Patient Interface
 | ![Patient 0](./assets/0.png) | ![Patient 1](./assets/1.png) | ![Patient 2](./assets/2.png) |
 |-------------------------------|-------------------------------|-------------------------------|
 | ![Patient 3](./assets/3.png) | ![Patient 4](./assets/4.png) | ![Patient 5](./assets/5.png) |
@@ -64,12 +74,21 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 | ![Admin 21](./assets/21.png) | ![Admin 22](./assets/22.png) | |
 
 ---
+## 🔮 Future Enhancements
+- Add AI voice assistant for better symptom analysis.  
+- Enable multilingual support (Hindi, Bengali, English).  
+- Add push notifications for appointment reminders.  
+- Expand AI model for advanced disease predictions.  
+- Improve UPI payment flow → after patient payment, system auto-verifies transaction so no need to send UPI ID to admin (fully self-sufficient).  
+- Integrate **Medicine Delivery System** → patients can order prescribed medicines and get home delivery directly from partner pharmacies.  
+
+---
 
 ## ⚡ Installation & Setup
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/doctalk-ai.git
+git clone https://github.com/abhradip001/doctalk-ai.git
 cd doctalk-ai
 
 # Install dependencies for backend
@@ -92,3 +111,19 @@ npm start
 # Run frontend
 cd ../frontend
 npm start
+
+
+## 📜 License
+This project is licensed under the terms of the **MIT License**.  
+See the [LICENSE](./LICENSE) file for details.
+
+## 🙌 Acknowledgements
+- [Contributor Covenant](https://www.contributor-covenant.org/) for the Code of Conduct  
+- [Shields.io](https://shields.io) for the badges  
+- [MongoDB, Express.js, React, Node.js, EJS, TailwindCSS] for powering the stack  
+
+## 📬 Contact
+- **Abhradip Mandal**  
+- 📧 Email: mandalabhradip5@gmail.com  
+- 💼 [LinkedIn](https://www.linkedin.com/in/abhradipmandal)  
+- 🐙 [GitHub](https://github.com/abhradip001)
