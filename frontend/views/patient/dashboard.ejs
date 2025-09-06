@@ -61,7 +61,7 @@
 <%- include('../shared/footer') %>
 
 <script>
-  // --- Safe mobile-menu toggle (if header has these IDs) ---
+  // --- Safe mobile-menu toggle ---
   document.getElementById('menu-btn')?.addEventListener('click', () => {
     document.getElementById('mobile-menu')?.classList.toggle('hidden');
   });
@@ -93,7 +93,7 @@
     };
   });
 
-  // --- API base (your server mounts /api/ai) ---
+  // --- API base ---
   const AI_BASE = '/api/ai';
 
   async function sendMessage() {
@@ -112,14 +112,12 @@
       });
       const data = await chatRes.json();
 
-      // --- 1) show the raw array text reply (backend `reply`)
       if (data.reply) {
         chatBox.innerHTML += `
           <pre class="bg-gray-100 rounded p-2 mt-2 overflow-x-auto text-xs whitespace-pre-wrap">AI: ${escapeHtml(data.reply)}</pre>
         `;
       }
 
-      // --- 2) show cards from structured `matchedConditions`
       const matched = Array.isArray(data.matchedConditions) ? data.matchedConditions : [];
       if (matched.length) {
         const top = matched[0];
@@ -133,7 +131,6 @@
         `;
       }
 
-      // --- 3) emergency banner (kept minimal; call buttons are always at top)
       if (data.isEmergency) {
         chatBox.innerHTML += `
           <div class="my-2 p-2 rounded bg-red-100 text-red-700 border border-red-300 text-sm">
@@ -144,15 +141,12 @@
       }
 
       chatBox.scrollTop = chatBox.scrollHeight;
-      speak(data.reply || '');   // voice read-out of array text
-
+      speak(data.reply || '');
     } catch (e) {
       console.error('chat error', e);
-      const chatBox = document.getElementById('chat-box');
       chatBox.innerHTML += `<p class="text-red-600">AI: Sorry, I had trouble responding.</p>`;
     }
 
-    // --- 4) fetch doctor suggestions
     try {
       const triageRes = await fetch(`${AI_BASE}/triage`, {
         method: 'POST',
@@ -193,7 +187,6 @@
   }
 
   function card(d) {
-    // If profileImage already includes 'uploads/...', just prefix with '/'
     const img = d.profileImage
       ? (String(d.profileImage).startsWith('uploads/')
           ? `/${d.profileImage}`
@@ -203,6 +196,7 @@
     const exp = d.experience || 0;
     const fee = d.fee ? `<div class="text-gray-600 text-xs">Fee: ₹${escapeHtml(String(d.fee))}</div>` : '';
 
+    // 🔴 Removed Book button here
     return `
       <div class="border rounded-lg p-3 flex items-center gap-3">
         <img src="${img}" class="w-12 h-12 rounded-full object-cover" alt="">
@@ -211,15 +205,10 @@
           <div class="text-gray-600 text-xs">${escapeHtml(d.specialization || '')} • ${exp} yrs</div>
           ${fee}
         </div>
-        <a class="bg-blue-600 text-white px-3 py-1 rounded text-sm"
-           href="/patient/appointment?doctorId=${encodeURIComponent(d._id)}">
-          Book
-        </a>
       </div>
     `;
   }
 
-  // Simple HTML escaper for safety in innerHTML usage
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -229,7 +218,6 @@
       .replace(/'/g, '&#39;');
   }
 
-  // Hook send button + Enter key
   document.getElementById('symptom-send')?.addEventListener('click', sendMessage);
   document.getElementById('userInput')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
