@@ -51,7 +51,7 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 
 ## 🖼️ Screenshots
 
-### 👨‍⚕️ Patient Interface
+### 🧑 Patient Interface
 | ![Patient 0](./assets/0.png) | ![Patient 1](./assets/1.png) | ![Patient 2](./assets/2.png) |
 |-------------------------------|-------------------------------|-------------------------------|
 | ![Patient 3](./assets/3.png) | ![Patient 4](./assets/4.png) | ![Patient 5](./assets/5.png) |
