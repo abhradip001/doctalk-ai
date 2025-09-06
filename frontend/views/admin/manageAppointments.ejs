@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Appointments — Admin</title>
+  <title>Manage Appointments — Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -24,7 +24,7 @@
 
   <!-- Content -->
   <main class="max-w-6xl mx-auto w-full px-4 mt-10 mb-12 flex-1">
-    <h1 class="text-3xl font-bold text-blue-600 mb-6">Appointments</h1>
+    <h1 class="text-3xl font-bold text-blue-600 mb-6">Manage Appointments</h1>
 
     <% if (!appointments || appointments.length === 0) { %>
       <div class="bg-white shadow rounded-lg p-8 text-center text-gray-600">
@@ -45,6 +45,7 @@
           <tbody>
             <% appointments.forEach(app => { %>
               <tr class="border-b hover:bg-gray-50">
+                
                 <!-- Patient -->
                 <td class="py-3 px-4">
                   <div class="font-medium"><%= app.patientId?.name || 'Unknown' %></div>
@@ -78,7 +79,7 @@
                       <span class="w-1.5 h-1.5 bg-green-600 rounded-full"></span> Approved
                     </span>
 
-                    <!-- Delete ONLY when Approved -->
+                    <!-- Delete button -->
                     <form action="/admin/appointments/<%= app._id %>/delete" method="POST"
                           class="mt-2"
                           onsubmit="return confirm('Delete this approved appointment permanently?');">
@@ -86,16 +87,18 @@
                         Delete
                       </button>
                     </form>
+
                   <% } else if (app.status === 'Cancelled') { %>
                     <span class="inline-flex items-center gap-1 rounded-full bg-red-100 text-red-700 px-2.5 py-0.5 text-xs font-semibold">
                       <span class="w-1.5 h-1.5 bg-red-600 rounded-full"></span> Cancelled
                     </span>
+
                   <% } else { %>
                     <span class="inline-flex items-center gap-1 rounded-full bg-yellow-100 text-yellow-700 px-2.5 py-0.5 text-xs font-semibold">
                       <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Pending
                     </span>
 
-                    <!-- Approve / Cancel (no date-pick, per your flow) -->
+                    <!-- Approve / Cancel buttons -->
                     <div class="mt-2 flex gap-2">
                       <form action="/admin/appointments/<%= app._id %>/status" method="POST" class="flex gap-1">
                         <input type="hidden" name="status" value="Approved">

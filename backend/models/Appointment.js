@@ -23,7 +23,8 @@ const appointmentSchema = new mongoose.Schema({
   meetingLink: {
     type: String,
     default: null
-  }
+  },
+  displayDate: { type: String }   
 });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);
