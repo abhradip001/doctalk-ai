@@ -80,7 +80,7 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 - Add push notifications for appointment reminders.  
 - Expand AI model for advanced disease predictions.  
 - Improve UPI payment flow → after patient payment, system auto-verifies transaction so no need to send UPI ID to admin (fully self-sufficient).  
-
+- Integrate **Medicine Delivery System** → patients can order prescribed medicines and get home delivery directly from partner pharmacies.  
 
 ---
 
