@@ -74,6 +74,13 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 | ![Admin 21](./assets/21.png) | ![Admin 22](./assets/22.png) | |
 
 ---
+## 🔮 Future Enhancements
+- Add AI voice assistant for symptom analysis.  
+- Enable multilingual support (Hindi, Bengali, English).  
+- Add push notifications for appointment reminders.  
+- Expand AI model for advanced disease predictions.
+
+---
 
 ## ⚡ Installation & Setup
 
@@ -113,3 +120,8 @@ See the [LICENSE](./LICENSE) file for details.
 - [Shields.io](https://shields.io) for the badges  
 - [MongoDB, Express.js, React, Node.js, EJS, TailwindCSS] for powering the stack  
 
+## 📬 Contact
+- **Abhradip Mandal**  
+- 📧 Email: mandalabhradip5@gmail.com  
+- 💼 [LinkedIn](https://www.linkedin.com/in/abhradipmandal)  
+- 🐙 [GitHub](https://github.com/abhradip001)
