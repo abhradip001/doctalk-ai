@@ -76,13 +76,18 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 ---
 📌 System Architecture Diagram
 
-    A[Users <br> Doctor | Patient | Admin] --> B[Frontend <br> EJS / React + Tailwind <br> Chat UI | Booking UI]
+    graph TD
 
-    B -->|REST API| C[Backend <br> Node.js + Express <br> Auth | Appointments | Payment | Prescription]
+A[Users <br> Doctor | Patient | Admin] --> B[Frontend <br> EJS / React + Tailwind <br> Chat UI | Booking UI]
 
-    C --> D[MongoDB <br> Users <br> Doctors <br> Appointments]
-    C --> E[AI Modules <br> Symptom NLP <br> Voice AI <br> Image Diagnosis]
-    C --> F[External APIs <br> Razorpay <br> Google Pay <br> Google Meet <br> Zoom API]
+B -->|REST API| C[Backend <br> Node.js + Express <br> Auth | Appointments | Payment | Prescription]
+
+C --> D[MongoDB <br> Users <br> Doctors <br> Appointments]
+
+C --> E[AI Modules <br> Symptom NLP <br> Voice AI <br> Image Diagnosis]
+
+C --> F[External APIs <br> Razorpay <br> Google Pay <br> Google Meet <br> Zoom API]
+
 
 ---
 ## 🔮 Future Enhancements
