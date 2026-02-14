@@ -73,8 +73,9 @@ It combines **AI-driven diagnosis, secure video consultations, UPI-based payment
 | ![Admin 18](./assets/18.png) | ![Admin 19](./assets/19.png) | ![Admin 20](./assets/20.png) |
 | ![Admin 21](./assets/21.png) | ![Admin 22](./assets/22.png) | |
 
----
-📌 System Architecture Diagram
+## 📌 System Architecture Diagram
+
+```mermaid
 graph TD
 
 A[Users<br>Doctor | Patient | Admin] --> B[Frontend<br>EJS / React + Tailwind<br>Chat UI | Booking UI]
@@ -86,10 +87,8 @@ C --> D[MongoDB<br>Users<br>Doctors<br>Appointments]
 C --> E[AI Modules<br>Symptom NLP<br>Voice AI<br>Image Diagnosis]
 
 C --> F[External APIs<br>Razorpay<br>Google Pay<br>Google Meet<br>Zoom API]
+```
 
-
-
----
 ## 🔮 Future Enhancements
 - Add AI voice assistant for better symptom analysis.  
 - Enable multilingual support (Hindi, Bengali, English).  
